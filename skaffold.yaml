@@ -1,0 +1,20 @@
+apiVersion: skaffold/v4beta6
+kind: Config 
+build:
+  artifacts:
+    - image: avishkaindula/auth
+      context: auth
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: 'src/**/*.ts'
+            dest: .
+  local:
+    push: false
+manifests:
+  rawYaml:
+    - ./infra/k8s/*
+deploy:
+  kubectl: {}
+  
