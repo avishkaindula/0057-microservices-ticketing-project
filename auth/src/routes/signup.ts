@@ -14,7 +14,8 @@ router.post(
       .isLength({ min: 4, max: 20 })
       .withMessage("Password must be between 4 and 20 characters"),
   ],
-  (req: Request, res: Response) => {
+
+  async (req: Request, res: Response) => {
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
@@ -26,6 +27,8 @@ router.post(
       // available in the error handler middleware.
 
       throw new RequestValidationError(errors.array());
+      // As we've imported the express-async-errors package, we can throw errors
+      // inside of async functions without having to use next() to pass the error.
     }
 
     console.log("Creating a user...");

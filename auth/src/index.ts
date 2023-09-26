@@ -1,6 +1,12 @@
 import express from "express";
 import { json } from "body-parser";
-
+import "express-async-errors";
+// This package will allow us to throw errors inside of async functions
+// without having to use next() to pass the error to the error handler.
+// We need to import express-async-errors before importing any other
+// routes or middlewares inside index.ts file because the package will
+// only effect routes or middlewares that are imported after
+// the package is imported.
 import { currentUserRouter } from "./routes/current-user";
 import { signinRouter } from "./routes/signin";
 import { signoutRouter } from "./routes/signout";
@@ -15,6 +21,11 @@ app.use(currentUserRouter);
 app.use(signinRouter);
 app.use(signoutRouter);
 app.use(signupRouter);
+
+// normal way of handling errors in async functions if we don't use express-async-errors package
+// app.all("*", async (req, res, next) => {
+//   next(new NotFoundError());
+// });
 
 app.all("*", async () => {
   throw new NotFoundError();
