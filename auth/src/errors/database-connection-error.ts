@@ -1,3 +1,7 @@
+import { CustomError } from "./custom-error";
+
+// ------------------------------------------------------------------------------------------------
+
 // Common error response structure
 // {
 //   errors:
@@ -8,7 +12,10 @@
 // }
 // So the errors should always be an array of objects with a message property.
 // field is optional because not all errors will have a field property.
-export class DatabaseConnectionError extends Error {
+
+// ------------------------------------------------------------------------------------------------
+// export class RequestValidationError extends Error {
+export class DatabaseConnectionError extends CustomError {
   statusCode = 500;
   reason = "Error connecting to database";
   // This is a property that is specific to the DatabaseConnectionError class.
@@ -16,7 +23,7 @@ export class DatabaseConnectionError extends Error {
 
   constructor() {
     // We are extending a built-in class. So we need to call super().
-    super();
+    super("Error connecting to db.");
 
     // Only because we are extending a built-in class, we need to write the following line of code.
     Object.setPrototypeOf(this, DatabaseConnectionError.prototype);

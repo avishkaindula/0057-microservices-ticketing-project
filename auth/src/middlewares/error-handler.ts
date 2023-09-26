@@ -1,6 +1,5 @@
 import { ErrorRequestHandler, NextFunction, Request, Response } from "express";
-import { RequestValidationError } from "../errors/request-validation-error";
-import { DatabaseConnectionError } from "../errors/database-connection-error";
+import { CustomError } from "../errors/custom-error";
 
 export const errorHandler: ErrorRequestHandler = (
   err: Error,
@@ -8,13 +7,13 @@ export const errorHandler: ErrorRequestHandler = (
   res: Response,
   next: NextFunction
 ) => {
-  if (err instanceof RequestValidationError) {
+  if (err instanceof CustomError) {
     return res.status(err.statusCode).send({ errors: err.serializeErrors() });
   }
-
-  if (err instanceof DatabaseConnectionError) {
-    return res.status(err.statusCode).send({ errors: err.serializeErrors() });
-  }
+  // As all Error classes extends the CustomError class, we can use the
+  // instanceof operator to check if the error is an instance of the
+  // CustomError class. If it is, then we can send the error in the
+  // common error response structure.
 
   res.status(400).send({
     errors: [{ message: "Something went wrong" }],

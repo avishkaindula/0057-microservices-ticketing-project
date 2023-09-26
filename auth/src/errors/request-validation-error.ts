@@ -1,4 +1,5 @@
 import { ValidationError } from "express-validator";
+import { CustomError } from "./custom-error";
 
 // Common error response structure
 // {
@@ -27,23 +28,24 @@ import { ValidationError } from "express-validator";
 // kind of methods and properties in Error classes.
 
 // ------------------------------------------------------------------------------------------------
-export class RequestValidationError extends Error {
+// export class RequestValidationError extends Error {
+export class RequestValidationError extends CustomError {
   statusCode = 400;
 
   constructor(public reasons: ValidationError[]) {
     // We are extending a built-in class. So we need to call super().
-    super();
+    super("Invalid request parameters.");
 
     // Only because we are extending a built-in class, we need to write the following line of code.
     Object.setPrototypeOf(this, RequestValidationError.prototype);
   }
 
   serializeErrors() {
-    return this.reasons.map((error) => {
-      // .reasons is present on the constructor of RequestValidationError
-      if (error.type === "field") {
-        return { message: error.msg, field: error.path };
+    return this.reasons.map((err) => {
+      if (err.type === 'field') {
+        return { message: err.msg, field: err.path };
       }
+      return { message: err.msg };
     });
   }
   // We need to create a serializeErrors() in every error class which 
