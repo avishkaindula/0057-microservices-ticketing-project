@@ -3,7 +3,7 @@ import { ValidationError } from "express-validator";
 export class RequestValidationError extends Error {
   statusCode = 400;
 
-  constructor(public errors: ValidationError[]) {
+  constructor(public reasons: ValidationError[]) {
     // We are extending a built-in class. So we need to call super().
     super();
 
