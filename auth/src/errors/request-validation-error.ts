@@ -11,6 +11,22 @@ import { ValidationError } from "express-validator";
 // So the errors should always be an array of objects with a message property.
 // field is optional because not all errors will have a field property.
 
+// ------------------------------------------------------------------------------------------------
+
+// interface CustomError {
+//   statusCode: number;
+//   serializeErrors(): {
+//     message: string;
+//     field?: string;
+//   }[];
+// }
+// export class RequestValidationError extends Error implements CustomError {
+
+// This way we can make sure that the RequestValidationError class implements
+// the CustomError interface. So it will reduce the chances of creating wrong
+// kind of methods and properties in Error classes.
+
+// ------------------------------------------------------------------------------------------------
 export class RequestValidationError extends Error {
   statusCode = 400;
 
