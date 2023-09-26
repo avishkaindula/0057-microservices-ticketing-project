@@ -1,5 +1,16 @@
 import { ValidationError } from "express-validator";
 
+// Common error response structure
+// {
+//   errors:
+//     {
+//       message: string;
+//       field?: string;
+//     }[]
+// }
+// So the errors should always be an array of objects with a message property.
+// field is optional because not all errors will have a field property.
+
 export class RequestValidationError extends Error {
   statusCode = 400;
 
@@ -10,4 +21,15 @@ export class RequestValidationError extends Error {
     // Only because we are extending a built-in class, we need to write the following line of code.
     Object.setPrototypeOf(this, RequestValidationError.prototype);
   }
+
+  serializeErrors() {
+    return this.reasons.map((error) => {
+      // .reasons is present on the constructor of RequestValidationError
+      if (error.type === "field") {
+        return { message: error.msg, field: error.path };
+      }
+    });
+  }
+  // We need to create a serializeErrors() in every error class which 
+  // will format the error in the common error response structure.
 }
