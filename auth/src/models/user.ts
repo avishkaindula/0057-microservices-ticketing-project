@@ -7,41 +7,45 @@ interface UserAttrs {
   password: string;
 }
 
+// An interface that describes the properties
+// that a User Model has.
+interface UserModel extends mongoose.Model<UserDoc> {
+  // extends will inherit all the properties that
+  // a mongoose Model has.
+  build(attrs: UserAttrs): UserDoc;
+}
+
+// An interface that describes the properties
+// that a User Document has.
+interface UserDoc extends mongoose.Document {
+  email: string;
+  password: string;
+}
+
 const userSchema = new mongoose.Schema({
   email: {
-    type: String, 
+    type: String,
     // This is a reference to the String constructor function
     // provided by JavaScript. This is not a reference to the string type
     // inside of TypeScript. string in TypeScript starts with a simple letter.
-    required: true
+    required: true,
   },
   password: {
     type: String,
-    required: true
-  }
+    required: true,
+  },
 });
 
-const User = mongoose.model("User", userSchema);
-
-// This is a function that creates a new User.
-const buildUser = (attrs: UserAttrs) => {
+// This is a static method that will be available on the User Model.
+// We can use this method to create a new User.
+userSchema.statics.build = (attrs: UserAttrs) => {
   return new User(attrs);
-}
+};
 
-// buildUser({
-//   email: "test@test.com",
-//   password: "password",
-//   // test: "test"
-//   // This will throw an error because the buildUser function only accepts the 
-//   // attributes defined in the UserAttrs interface.
-// });
-// We create a new User by calling the buildUser function instead of calling
-// the new User constructor function directly. This is because we want to make sure
-// that the user we are creating has the correct properties defined in the
-// UserAttrs interface. If we call the User constructor function directly, then
-// we can pass any properties we want to the constructor function and it will
-// not throw any errors. This is because the User constructor function is
-// provided by mongoose and it doesn't know anything about the UserAttrs
-// interface.
+const User = mongoose.model<UserDoc, UserModel>("User", userSchema);
+// <UserDoc, UserModel> is a generic type. We are telling TypeScript that
+// we are creating a new collection called User and this collection will
+// have documents of type UserDoc and the User Model will have properties
+// of type UserModel.
 
-export { User, buildUser };
+export { User };
