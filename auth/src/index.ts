@@ -13,6 +13,7 @@ import { signoutRouter } from "./routes/signout";
 import { signupRouter } from "./routes/signup";
 import { errorHandler } from "./middlewares/error-handler";
 import { NotFoundError } from "./errors/not-found-error";
+import mongoose from "mongoose";
 
 const app = express();
 app.use(json());
@@ -42,6 +43,17 @@ app.use(errorHandler);
 // automatically get passed to this error handler middleware and they will be
 // handled in a consistent way.
 
-app.listen(3000, () => {
-  console.log("Listening on port 3000");
-});
+const start = async () => {
+  try {
+    await mongoose.connect("mongodb://auth-mongo-srv:27017/auth");
+    console.log("Connected to MongoDB");
+  } catch (err) {
+    console.log(err);
+  }
+
+  app.listen(3000, () => {
+    console.log("Listening on port 3000");
+  });
+}
+
+start();
