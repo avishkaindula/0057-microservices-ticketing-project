@@ -1,5 +1,4 @@
 import express from "express";
-import { json } from "body-parser";
 import "express-async-errors";
 // This package will allow us to throw errors inside of async functions
 // without having to use next() to pass the error to the error handler.
@@ -7,16 +6,24 @@ import "express-async-errors";
 // routes or middlewares inside index.ts file because the package will
 // only effect routes or middlewares that are imported after
 // the package is imported.
+import { json } from "body-parser";
+import mongoose from "mongoose";
+import cookieSession from "cookie-session";
+
 import { currentUserRouter } from "./routes/current-user";
 import { signinRouter } from "./routes/signin";
 import { signoutRouter } from "./routes/signout";
 import { signupRouter } from "./routes/signup";
 import { errorHandler } from "./middlewares/error-handler";
 import { NotFoundError } from "./errors/not-found-error";
-import mongoose from "mongoose";
 
 const app = express();
+app.set("trust proxy", true);
 app.use(json());
+app.use(cookieSession({
+  signed: false,
+  secure: true
+}))
 
 app.use(currentUserRouter);
 app.use(signinRouter);
@@ -44,6 +51,13 @@ app.use(errorHandler);
 // handled in a consistent way.
 
 const start = async () => {
+  if (!process.env.JWT_KEY) {
+    throw new Error("JWT_KEY must be defined");
+    // Better if we create a new error class for this error, but for now we'll use the built-in Error class.
+  }
+  // We need to check if the JWT_KEY environment variable is defined or not at the start of the application.
+  // Otherwise, typescript will throw an error when we try to access the JWT_KEY environment variable.
+
   try {
     await mongoose.connect("mongodb://auth-mongo-srv:27017/auth");
     console.log("Connected to MongoDB");
@@ -55,5 +69,6 @@ const start = async () => {
     console.log("Listening on port 3000");
   });
 }
+
 
 start();
