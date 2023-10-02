@@ -23,19 +23,39 @@ interface UserDoc extends mongoose.Document {
   password: string;
 }
 
-const userSchema = new mongoose.Schema({
-  email: {
-    type: String,
-    // This is a reference to the String constructor function
-    // provided by JavaScript. This is not a reference to the string type
-    // inside of TypeScript. string in TypeScript starts with a simple letter.
-    required: true,
+const userSchema = new mongoose.Schema(
+  {
+    email: {
+      type: String,
+      // This is a reference to the String constructor function
+      // provided by JavaScript. This is not a reference to the string type
+      // inside of TypeScript. string in TypeScript starts with a simple letter.
+      required: true,
+    },
+    password: {
+      type: String,
+      required: true,
+    },
   },
-  password: {
-    type: String,
-    required: true,
-  },
-});
+  {
+    toJSON: {
+      // This is a mongoose property that will be called when we try to send
+      // the user document back to the client as a response.
+      transform(doc, ret) {
+        // doc is the user document that we are trying to send back to the client.
+        // ret is the object that is going to be turned into JSON.
+        ret.id = ret._id;
+        delete ret._id;
+        delete ret.password;
+        delete ret.__v;
+        // We need to generalize the response object because we are going to use
+        // this response object in different places. So we need to make sure that
+        // the response object doesn't have any properties that are specific to
+        // a particular database or a particular library.
+      },
+    },
+  }
+);
 
 // This is a middleware function that will run before a user is saved.
 // We cannot use an arrow function here because we need to use the this keyword.
