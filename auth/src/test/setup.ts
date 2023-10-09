@@ -2,6 +2,9 @@ import { MongoMemoryServer } from "mongodb-memory-server";
 import mongoose from "mongoose";
 import { app } from "../app";
 
+// jest globals allow us to define a global function that will be executed before any test is ran
+// beforeAll, beforeEach, afterAll, afterEach are all jest globals
+
 let mongo: any;
 beforeAll(async () => {
   process.env.JWT_KEY = "asdfasdf";

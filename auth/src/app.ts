@@ -22,7 +22,13 @@ app.use(json());
 app.use(
   cookieSession({
     signed: false,
-    secure: true,
+    secure: process.env.NODE_ENV !== "test",
+    // This will create a environment variable called NODE_ENV that will be
+    // set to "test" when we run tests. So if we are in a test environment,
+    // then we will set the secure property to false. This will allow us to
+    // send requests to our application over http instead of https when we
+    // are running tests. This is because when we run tests, we don't have
+    // a https connection.
   })
 );
 
