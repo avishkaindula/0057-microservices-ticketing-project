@@ -46,6 +46,10 @@ router.post(
     req.session = {
       jwt: userJwt,
     };
+    // once the JWT is set in the session and sent to the client as a cookie, 
+    // it will be automatically included in subsequent requests / followup requests from the client to your server. 
+    // (client can be a browser or postman)
+    // This is because the cookie is sent along with each HTTP request to the domain it belongs to.
 
     res.status(200).send(existingUser);
   }
