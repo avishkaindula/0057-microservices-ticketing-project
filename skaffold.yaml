@@ -18,6 +18,14 @@ build:
         manual:
           - src: '**/*.js'
             dest: .
+    - image: avishkaindula/tickets
+      context: tickets
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: 'src/**/*.ts'
+            dest: .
   local:
     push: false
 manifests:
