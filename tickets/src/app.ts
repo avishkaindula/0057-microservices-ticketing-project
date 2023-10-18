@@ -8,7 +8,8 @@ import "express-async-errors";
 // the package is imported.
 import { json } from "body-parser";
 import cookieSession from "cookie-session";
-import { errorHandler, NotFoundError } from "@airtickets/common";
+import { errorHandler, NotFoundError, currentUser } from "@airtickets/common";
+import { createTicketRouter } from "./routes/new";
 
 const app = express();
 app.set("trust proxy", true);
@@ -29,6 +30,15 @@ app.use(
 // it will be automatically included in subsequent requests / followup requests from the client to your server.
 // (client can be a browser or postman)
 // This is because the cookie is sent along with each HTTP request to the domain it belongs to.
+
+app.use(currentUser);
+// This middleware will run before any other middlewares or routes.
+// The use-case of this middleware is to check if the request.session cookie has a JWT or not and then
+// create and set the currentUser property on the request object if the JWT is set in the session.
+// We should assume that we will always going to run currentUser middleware only after
+// running the cookieSession middleware.
+
+app.use(createTicketRouter);
 
 // normal way of handling errors in async functions if we don't use express-async-errors package
 // app.all("*", async (req, res, next) => {

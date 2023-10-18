@@ -9,18 +9,24 @@ interface UserAttrs {
 }
 
 // An interface that describes the properties
-// that a User Model has.
-interface UserModel extends mongoose.Model<UserDoc> {
-  // extends will inherit all the properties that
-  // a mongoose Model has.
-  build(attrs: UserAttrs): UserDoc;
-}
-
-// An interface that describes the properties
 // that a User Document has.
 interface UserDoc extends mongoose.Document {
   email: string;
   password: string;
+}
+
+// An interface that describes the properties
+// that a User Model has.
+interface UserModel extends mongoose.Model<UserDoc> {
+  // extends will inherit all the properties that
+  // a mongoose Model has.
+  // The purpose of <UserDoc> is to tell TypeScript
+  // that we are creating a new collection called User
+  // and this collection will have documents of type UserDoc.
+  build(attrs: UserAttrs): UserDoc;
+  // this means that the build method will return
+  // a User Document which is of type UserDoc by taking
+  // in attrs which is of type UserAttrs.
 }
 
 const userSchema = new mongoose.Schema(
@@ -81,6 +87,9 @@ userSchema.pre("save", async function (done) {
 userSchema.statics.build = (attrs: UserAttrs) => {
   return new User(attrs);
 };
+// This custom build function is the one we use instead of mongoose.create() in order to 
+// create new documents. This is because we want to make sure that we are creating a new
+// document with the correct types.
 
 const User = mongoose.model<UserDoc, UserModel>("User", userSchema);
 // <UserDoc, UserModel> is a generic type. We are telling TypeScript that
