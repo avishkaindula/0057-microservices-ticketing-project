@@ -10,6 +10,7 @@ import { json } from "body-parser";
 import cookieSession from "cookie-session";
 import { errorHandler, NotFoundError, currentUser } from "@airtickets/common";
 import { createTicketRouter } from "./routes/new";
+import { showTicketRouter } from "./routes/show";
 
 const app = express();
 app.set("trust proxy", true);
@@ -39,6 +40,7 @@ app.use(currentUser);
 // running the cookieSession middleware.
 
 app.use(createTicketRouter);
+app.use(showTicketRouter);
 
 // normal way of handling errors in async functions if we don't use express-async-errors package
 // app.all("*", async (req, res, next) => {
