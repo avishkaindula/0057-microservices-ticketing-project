@@ -12,6 +12,7 @@ import { errorHandler, NotFoundError, currentUser } from "@airtickets/common";
 import { createTicketRouter } from "./routes/new";
 import { showTicketRouter } from "./routes/show";
 import { indexTicketRouter } from "./routes/index";
+import { updateTicketRouter } from "./routes/update";
 
 const app = express();
 app.set("trust proxy", true);
@@ -43,6 +44,7 @@ app.use(currentUser);
 app.use(createTicketRouter);
 app.use(showTicketRouter);
 app.use(indexTicketRouter);
+app.use(updateTicketRouter);
 
 // normal way of handling errors in async functions if we don't use express-async-errors package
 // app.all("*", async (req, res, next) => {

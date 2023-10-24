@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 interface TicketAttrs {
   title: string;
@@ -24,7 +24,14 @@ const ticketSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    price: { type: Number, required: true },
+    price: {
+      type: Number,
+      required: true,
+    },
+    userId: {
+      type: String,
+      required: true,
+    },
   },
   {
     toJSON: {
@@ -47,6 +54,7 @@ ticketSchema.statics.build = (attrs: TicketAttrs) => {
 
 // This is how we create a new collection called Ticket
 // and this collection will have documents of type TicketDoc.
-const Ticket = mongoose.model<TicketDoc, TicketModel>("Ticket", ticketSchema);
+const Ticket = mongoose.model<TicketDoc, TicketModel>('Ticket', ticketSchema);
 
 export { Ticket };
+
