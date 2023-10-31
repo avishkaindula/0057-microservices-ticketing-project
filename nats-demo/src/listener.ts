@@ -22,7 +22,7 @@ stan.on("connect", () => {
   // The first argument is the channel name to subscribe to.
   // The second argument is the queue group name. If we don't provide a queue group name, then the NATS
   // streaming server will send the message to all the copies of the listeners that are subscribed to that channel. But
-  // if we provide a queue group name, then the NATS streaming server will send the message to only one
+  // if we provide a queue group name, then the NATS streaming server will send the message to only one copy of the
   // listener that is subscribed to that channel. It will load balance the messages between all the listeners
   // that are subscribed to that channel.
 
