@@ -15,9 +15,20 @@ const stan = nats.connect("ticketing", randomBytes(4).toString("hex"), {
 stan.on("connect", () => {
   console.log("Listener connected to NATS");
 
+  const options = stan.subscriptionOptions().setManualAckMode(true);
+  // We can set some options for the subscription. We can use the subscriptionOptions() method to set the options.
+  // The setManualAckMode() method will set the manual acknowledgement mode to true. By default, the manual
+  // acknowledgement mode is false. When the manual acknowledgement mode is false, then the NATS streaming server
+  // will automatically send an acknowledgement to the publisher when the message is received by the listener.
+  // But when the manual acknowledgement mode is true, then the listener will have to manually send an
+  // acknowledgement to the NATS streaming server when the message is received by the listener. If the listener
+  // does not send an acknowledgement to the NATS streaming server, then the NATS streaming server will assume
+  // that the message was not received by the listener and will send the message to another listener.
+
   const subscription = stan.subscribe(
     "ticket:created",
-    "orders-service-queue-group"
+    "orders-service-queue-group",
+    options
   );
   // The first argument is the channel name to subscribe to.
   // The second argument is the queue group name. If we don't provide a queue group name, then the NATS
@@ -37,6 +48,14 @@ stan.on("connect", () => {
     }
     // msg.getSequence() will return the sequence number of the message. It's a auto incrementing number
     // that is assigned to each message that is published to the channel starting from 1.
+
+    msg.ack();
+    // This will send an acknowledgement to the NATS streaming server that the message was received by the listener.
+    // If we don't send an acknowledgement to the NATS streaming server, then the NATS streaming server will
+    // assume that the message was not received by the listener and will send the message to another copy of the listener or
+    // to the same listener again after like 30 seconds. This is useful because if for some reason, some code
+    // before the msg.ack() line throws an error and return, then the message will not be acknowledged in msg.ack() and the NATS streaming
+    // server will send the message to another copy of the listener or to the same listener again after like 30 seconds.
   });
   // The second argument is a callback function that will be executed when a message is received
 });
