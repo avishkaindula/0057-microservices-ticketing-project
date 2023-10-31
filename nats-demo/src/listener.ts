@@ -15,6 +15,12 @@ const stan = nats.connect("ticketing", randomBytes(4).toString("hex"), {
 stan.on("connect", () => {
   console.log("Listener connected to NATS");
 
+  stan.on("close", () => {
+    console.log("NATS connection closed!");
+    process.exit();
+    // This will close the listener when the NATS streaming server is closed
+  });
+
   const options = stan.subscriptionOptions().setManualAckMode(true);
   // We can set some options for the subscription. We can use the subscriptionOptions() method to set the options.
   // The setManualAckMode() method will set the manual acknowledgement mode to true. By default, the manual
@@ -59,3 +65,11 @@ stan.on("connect", () => {
   });
   // The second argument is a callback function that will be executed when a message is received
 });
+
+process.on("SIGINT", () => stan.close());
+// This will close the listener when we press ctrl + c
+process.on("SIGTERM", () => stan.close());
+// This will close the listener when we press ctrl + c
+// The above two lines are used to close the listener when we press ctrl + c. (OR rs in the terminal. rs will restart the terminal.)
+// If we don't do that, then the listener will not close properly and the NATS streaming server will think that the listener is still
+// connected to the NATS streaming server and will send the messages to the listener. But the listener is not running anymore.
