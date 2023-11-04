@@ -21,7 +21,11 @@ stan.on("connect", () => {
     // This will close the listener when the NATS streaming server is closed
   });
 
-  const options = stan.subscriptionOptions().setManualAckMode(true);
+  const options = stan
+    .subscriptionOptions()
+    .setManualAckMode(true)
+    .setDeliverAllAvailable()
+    .setDurableName("accounting-service");
   // We can set some options for the subscription. We can use the subscriptionOptions() method to set the options.
   // The setManualAckMode() method will set the manual acknowledgement mode to true. By default, the manual
   // acknowledgement mode is false. When the manual acknowledgement mode is false, then the NATS streaming server
@@ -30,6 +34,17 @@ stan.on("connect", () => {
   // acknowledgement to the NATS streaming server when the message is received by the listener. If the listener
   // does not send an acknowledgement to the NATS streaming server, then the NATS streaming server will assume
   // that the message was not received by the listener and will send the message to another listener.
+  // setDeliverAllAvailable() will tell the NATS streaming server to send all the messages that were published
+  // to the channel in the past to the listener. 
+  // setDurableName() will tell the NATS streaming server to keep track of the messages that were sent to the
+  // listener. So if the listener goes offline for some time and then comes back online, then the NATS streaming
+  // server will send the messages that were sent to the listener when it was offline to the listener. We need to
+  // add this because if we haven't add this, setDeliverAllAvailable() will send all the messages that were published
+  // to the channel in the past to the listener. The previous messages will might have already been processed by
+  // the listener. So there's no need to reprocess them. That's why we need to add setDurableName(). But in order
+  // to use setDurableName() as expected, we should always have a queue group inside the subscription() method.
+  // (orders-service-queue-group) 
+
 
   const subscription = stan.subscribe(
     "ticket:created",
